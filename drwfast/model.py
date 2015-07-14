@@ -68,7 +68,8 @@ def unpacksinglepar(p):
 
 
 def lnprob(p, lc, set_prior=True):
-    sigma, tau = unpacksinglepar(p)
+    #sigma, tau = unpacksinglepar(p)
+    sigma, tau = np.exp(p[0]), np.exp(p[1])
     lnl = lnlike(sigma, tau, lc)
 
     prior = 0.0
