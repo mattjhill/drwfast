@@ -85,6 +85,11 @@ def lnprob(p, lc, set_prior=True):
     return lnl + prior
 
 class DRWModel(object):
+    """ The damped random walk model object 
+
+        :param lc:
+            A lightcurve object
+    """
     def __init__(self, lc):
         self.lc = lc
 

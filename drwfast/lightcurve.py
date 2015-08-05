@@ -8,6 +8,8 @@ def make_lc(fname):
 
 
 class LightCurve(object):
+	""" A light curve object"""
+	
 	def __init__(self, data):
 		data = data[data[:,0].argsort()]
 		self.npt = len(data)
