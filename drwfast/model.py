@@ -3,125 +3,101 @@ import numpy as np
 from scipy.optimize import fmin
 
 from emcee import EnsembleSampler
-
-from .tridiagonal import snsolve
-
-my_neg_inf = float(-1.0e+300)
-my_pos_inf = float( 1.0e+300)
-
-tau_floor     = 1.e-6
-tau_ceiling   = 1.e+5
-sigma_floor   = 1.e-6
-sigma_ceiling = 1.e+2
-logtau_floor     = np.log(tau_floor) 
-logtau_ceiling   = np.log(tau_ceiling)   
-logsigma_floor   = np.log(sigma_floor)  
-logsigma_ceiling = np.log(sigma_ceiling) 
-
-def lnlike(sigma, tau, lc, return_chisq=False):
-    """
-    Calculate the log-likelihood as laid out in Rybicki/Press 95
-    """
-    L = np.ones(len(lc.t))
-    err2 = lc.yerr**2
-    var = sigma**2
-    
-    # get the log determinant of C^-1 and solve 
-    # C a = L
-    ldetc, a = snsolve(lc.t, err2, var, tau, L)
-    # Calculate Cq = 1/(L^T C^-1 L)
-    Cq = 1/np.dot(L.T, a)
-
-    # solve C b = y
-    _, b = snsolve(lc.t, err2, var, tau, lc.y)
-    
-    c = np.dot(L.T, b)
-    c *= Cq
-
-    _, d = snsolve(lc.t, err2, var, tau, c*L)
-    
-    chisq = np.dot(lc.y.T, b-d)
-    lnl = -.5*chisq + .5*np.log(Cq) -.5*ldetc
-    if return_chisq:
-        return lnl, chisq
-
-    return lnl
-
-def unpacksinglepar(p):
-    """ 
-    Internal Function: Unpack the physical parameters from input 1-d array for single mode.
-    """
-    if p[0] > logsigma_ceiling :
-        sigma = sigma_ceiling
-    elif p[0] < logsigma_floor :
-        sigma = sigma_floor
-    else :
-        sigma = np.exp(p[0])
-    if p[1] > logtau_ceiling :
-        tau = tau_ceiling
-    elif p[1] < logtau_floor :
-        tau = tau_floor
-    else :
-        tau = np.exp(p[1])
-
-    return (sigma, tau)
-
-
-def lnprob(p, lc, set_prior=True):
-    #sigma, tau = unpacksinglepar(p)
-    sigma, tau = np.exp(p[0]), np.exp(p[1])
-    lnl = lnlike(sigma, tau, lc)
-
-    prior = 0.0
-    if set_prior:
-        prior += -np.log(sigma)
-        if tau > lc.cont_cad:
-            prior += -np.log(tau/lc.cont_cad)
-        elif tau < 0.001:
-            prior += my_neg_inf
-        else:
-            prior += -np.log(lc.cont_cad/tau)
-
-    return lnl + prior
+from ._tridiagonal import lnlike
 
 class DRWModel(object):
-    """ The damped random walk model object 
+    """ 
+    The damped random walk model object 
 
-        :param lc:
-            A lightcurve object
+    Attributes
+    ----------
+    lc : LightCurve object
+        A drwfast light curve to model
+    t : array_like
+        Array containing the observation times
+    y : array_like
+        Array containing the observations
+    yerr : array_like
+        Array containg the error bars for the observations
+    err2 : array_like
+        The squared errors, which will be passed to the likelihood function
+
     """
     def __init__(self, lc):
         self.lc = lc
+        self.t = self.lc.t
+        self.y = self.lc.y
+        self.yerr = self.lc.yerr
+        self.err2 = self.yerr**2
 
-    def do_map(self, pinit, set_prior=False):
+    def lnprob(self, p):
+        """
+        The log-probability, i.e. the log-likelihood plus the prior distribution.
+
+        Parameters
+        ----------
+        p : array_like
+            an array containing the the parameters at which to evaluate the 
+            log-probability, i.e. [log_sigma, log_tau]
+
+        Returns
+        -------
+        lnp : float
+            The log-probability
+        """
+        #sigma, tau = unpacksinglepar(p)
+        sigma, tau = np.exp(p[0]), np.exp(p[1])
+        var = sigma**2
+        lnl = lnlike(var, tau, self.t, self.y, self.err2)
+        if np.isnan(lnl):
+            return -np.inf
+        else:
+            return lnl
+        # prior = 0.0
+        # if set_prior:
+        #     prior += -np.log(sigma)
+        #     if tau > lc.cont_cad:
+        #         prior += -np.log(tau/lc.cont_cad)
+        #     elif tau < 0.001:
+        #         prior += my_neg_inf
+        #     else:
+        #         prior += -np.log(lc.cont_cad/tau)
+
+        # return lnl + prior
+
+    def do_map(self, pinit):
         """
         Get the Maximum A Posterior (MAP) DRW parameters.
         """
-        func = lambda _p : -lnprob(_p, self.lc, set_prior=set_prior)
+        func = lambda _p : -self.lnprob(_p)
         p_best, lnl_best = fmin(func, pinit, full_output=True, disp=False)[:2]
         return p_best, -lnl_best    
 
-    def get_Linf(self, set_prior=False):
-        """
-        Get Likelihood that tau -> infinity.  
-        """
-        func = lambda _p : -lnprob([_p, 20], self.lc, set_prior=set_prior)
-        p_best, lnl_best = fmin(func, 1, full_output=True, disp=False)[:2]
-        return -lnl_best
-
-    def get_Lnoise(self, set_prior=False):
-        """
-        Get Likelihood that tau -> 0.
-        """
-        func = lambda _p : -lnprob([_p, -20], self.lc, set_prior=set_prior)
-        p_best, lnl_best = fmin(func, 1, full_output=True, disp=False)[:2]
-        return -lnl_best        
-
-    def get_chisq(self, sigma, tau):
-        lnl, chisq = lnlike(sigma, tau, self.lc, return_chisq=True)
-        return chisq/(self.lc.npt - 2)
-
     def do_mcmc(self, nwalker=100, nburn=50, nchain=50, threads=1, set_prior=True):
+        """
+        Find the best fitting parameters for the light curve via Monte Carlo 
+        Markov Chain (MCMC) using the EnsembleSampler from emcee
+
+        Parameters
+        ----------
+        nwalker : int
+            the number walkers
+        nburn : int
+            the number of steps in the burn-in phase
+        nchain : int
+            the number of steps in the actual sampling phase
+        threads: int
+            number of threads to use 
+        set_prior : bool
+            whether to use a log-prior (True) or an empty prior (False)
+
+        Notes
+        -----
+        The chain itself and the log-probability at each step in the chain
+        can be accessed via ``flatchain`` and ``lnprobability`` after the chain
+        has been run.
+
+        """
 
         # initial walkers for MCMC
         ndim = 2
@@ -130,7 +106,7 @@ class DRWModel(object):
         p0[:,1] = np.log(self.lc.rj*0.5*p0[:,1])
 
         #start sampling
-        sampler = EnsembleSampler(nwalker, ndim, lnprob, args=(self.lc,set_prior), threads=threads)
+        sampler = EnsembleSampler(nwalker, ndim, self.lnprob, threads=threads)
         # burn-in 
         pos, prob, state = sampler.run_mcmc(p0, nburn)
         sampler.reset()
@@ -141,6 +117,22 @@ class DRWModel(object):
         self.lnprobability = sampler.lnprobability
 
     def get_results(self, pcts=[16, 50, 84]):
+        """
+        Get the results of the MCMC sampling
+
+        Parameters
+        ----------
+        pcts : list
+            three perecentiles of the posterior, defaults to +/- 1 sigma
+            and the median.
+
+        Returns
+        -------
+        hpd : array_like
+            a 3x2 array containing the specified percentiles for log_sigma
+            and log_tau
+
+        """
         hpd = np.zeros((3,2))
         hpd[0] = np.percentile(self.flatchain, pcts[0], axis=0)
         hpd[1] = np.percentile(self.flatchain, pcts[1], axis=0)
