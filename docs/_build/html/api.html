@@ -72,8 +72,52 @@
 </dd></dl>
 
 </div>
-<div class="section" id="the-model-module">
-<h2>The &#8220;model&#8221; module<a class="headerlink" href="#the-model-module" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="module-drwfast.model">
+<span id="the-model-module"></span><h2>The &#8220;model&#8221; module<a class="headerlink" href="#module-drwfast.model" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="drwfast.model.DRWModel">
+<em class="property">class </em><tt class="descclassname">drwfast.model.</tt><tt class="descname">DRWModel</tt><big>(</big><em>lc</em><big>)</big><a class="headerlink" href="#drwfast.model.DRWModel" title="Permalink to this definition">¶</a></dt>
+<dd><p>The damped random walk model object</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>lc</strong> &#8211; A lightcurve object</td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="drwfast.model.DRWModel.do_map">
+<tt class="descname">do_map</tt><big>(</big><em>pinit</em>, <em>set_prior=False</em><big>)</big><a class="headerlink" href="#drwfast.model.DRWModel.do_map" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the Maximum A Posterior (MAP) DRW parameters.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="drwfast.model.DRWModel.get_Linf">
+<tt class="descname">get_Linf</tt><big>(</big><em>set_prior=False</em><big>)</big><a class="headerlink" href="#drwfast.model.DRWModel.get_Linf" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get Likelihood that tau -&gt; infinity.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="drwfast.model.DRWModel.get_Lnoise">
+<tt class="descname">get_Lnoise</tt><big>(</big><em>set_prior=False</em><big>)</big><a class="headerlink" href="#drwfast.model.DRWModel.get_Lnoise" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get Likelihood that tau -&gt; 0.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="drwfast.model.lnlike">
+<tt class="descclassname">drwfast.model.</tt><tt class="descname">lnlike</tt><big>(</big><em>sigma</em>, <em>tau</em>, <em>lc</em>, <em>return_chisq=False</em><big>)</big><a class="headerlink" href="#drwfast.model.lnlike" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate the log-likelihood as laid out in Rybicki/Press 95</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="drwfast.model.unpacksinglepar">
+<tt class="descclassname">drwfast.model.</tt><tt class="descname">unpacksinglepar</tt><big>(</big><em>p</em><big>)</big><a class="headerlink" href="#drwfast.model.unpacksinglepar" title="Permalink to this definition">¶</a></dt>
+<dd><p>Internal Function: Unpack the physical parameters from input 1-d array for single mode.</p>
+</dd></dl>
+
 </div>
 </div>
 
@@ -87,7 +131,7 @@
   <ul>
 <li><a class="reference internal" href="#">API/Reference</a><ul>
 <li><a class="reference internal" href="#module-drwfast.lightcurve">The &#8220;lightcurve&#8221; module</a></li>
-<li><a class="reference internal" href="#the-model-module">The &#8220;model&#8221; module</a></li>
+<li><a class="reference internal" href="#module-drwfast.model">The &#8220;model&#8221; module</a></li>
 </ul>
 </li>
 </ul>
