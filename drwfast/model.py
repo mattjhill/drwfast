@@ -3,15 +3,34 @@ import numpy as np
 from scipy.optimize import fmin
 
 from emcee import EnsembleSampler
+import numba
 
 from .tridiagonal import snsolve
 from .grp import GRP
 from .lightcurve import LightCurve
 
-my_neg_inf = float(-1.0e+300)
-my_pos_inf = float( 1.0e+300)
 
+@numba.jit
+def lnlike_Kalman_fast(sigmasqr, tau, t, y, yerr):
+    """
+    Calculate the DRW loglikelihood using the Kalman Filter Method.
 
+    Note: numba is used for speed, but can't be used for methods so the DRWModel method 
+    lnlike_kalman calls this function.
+    """
+    x = np.zeros_like(t)
+    omega = np.zeros_like(t)
+    xstar = y - np.mean(y)
+    x[0] = 0
+    omega[0] = tau*sigmasqr/2
+    for i in range(1, len(t)):
+        a = np.exp(-(t[i]-t[i-1])/tau)
+        x[i] = a*x[i-1] + a*omega[i-1]/(omega[i-1] + yerr[i-1]**2)*(xstar[i-1] - x[i-1])
+        omega[i] = omega[0]*(1-a**2) + a**2*omega[i-1]*(1 - omega[i-1]/(omega[i-1] + yerr[i-1]**2))
+
+    chisq = ((x-xstar)**2/(omega + yerr**2)).sum()
+    norm = (np.log(2*np.pi*(omega + yerr**2))).sum()
+    return -0.5*(norm + chisq) 
 
 class DRWModel(object):
     """ The damped random walk model object 
@@ -19,10 +38,19 @@ class DRWModel(object):
         :param lc:
             A lightcurve object
     """
-    def __init__(self, lc):
+    def __init__(self, lc, lnlikefn='PRH'):
         self.lc = lc
+        if lnlikefn == 'PRH':
+            self.lnlike = self.lnlike_PRH
+        elif lnlikefn == 'GP':
+            self.lnlike = self.lnlike_GP
+        elif lnlikefn == 'Kalman':
+            self.lnlike = self.lnlike_kalman
+        else:
+            print('invalid lnlike function, using lnlike_PRH')
+            self.lnlike = self.lnlike_PRH
     
-    def lnlike(self, sigmasqr, tau, lc, return_chisq=False):
+    def lnlike_PRH(self, sigmasqr, tau, lc, return_chisq=False):
         """
         Calculate the log-likelihood as laid out in Rybicki/Press 95
         """
@@ -53,6 +81,27 @@ class DRWModel(object):
             return lnl, chisq
 
         return lnl
+
+    def lnlike_GP(self, sigmasqr, tau, lc):
+        """
+        Calculate the loglikelihood using standard Gaussian Process method.
+        """       
+        L = np.ones(len(lc.t))
+        err2 = lc.yerr**2
+        var = sigmasqr*tau/2
+
+        ldetc, a = snsolve(lc.t, err2, var, tau, L)
+        yavg = np.dot(L.T, snsolve(lc.t, err2, var, tau, lc.y)[1])
+        yavg /= np.dot(L.T, a)
+
+        chisq = np.dot(lc.y-yavg, snsolve(lc.t, err2, var, tau, lc.y-yavg)[1])
+        return -0.5 * chisq - 0.5 * ldetc - 0.5 * lc.npt * np.log(2*np.pi) 
+
+    def lnlike_kalman(self, sigmasqr, tau, lc):
+        """
+        Calculate the loglikelihood using the Kalman fitler method.
+        """
+        return lnlike_Kalman_fast(sigmasqr, tau, lc.t, lc.y, lc.yerr)
 
     def lnprob(self, p, lc, set_prior=True, sigmasqr_min=1e-10):
         #sigma, tau = unpacksinglepar(p)
@@ -194,22 +243,28 @@ class SupOUModel(object):
         :param lc:
             A lightcurve object
     """
-    def __init__(self, lc):
+    def __init__(self, lc, lnlikefn='PRH'):
         self.lc = lc
+        if lnlikefn == 'PRH':
+            self.lnlike = self.lnlike_PRH
+        elif lnlikefn == 'Kalman':
+            self.lnlike = self.lnlike_kalman
+        else:
+            print('invalid lnlike function, using lnlike_PRH')
+            self.lnlike = self.lnlike_PRH
 
     def set_weights(self, lc, tau_H, alpha, M=30):
+        """
+        Calculate the weights of the individual OU processes.
+        """
         log_omega = np.zeros(M)
         tau_L = lc.dt_tot*10
-        # for i in range(M):
-        #     log_omega[i] = np.log10(1/tau_L) + float((i))/(M-1)*(np.log10(1/tau_H) - np.log10(1/tau_L))
-
-        # omega = 10**(log_omega)
         omega = np.exp(np.log(1/tau_L) + (np.arange(1., M+1)-1)/(M-1)*(np.log(1/tau_H) - np.log(1/tau_L)))
         weights = omega**(1-alpha/2)/np.sqrt((omega**(2-alpha)).sum())
         tau = 1/omega
         return weights, tau
 
-    def lnlike(self, sigmasqr, tau_H, lc, return_chisq=False):
+    def lnlike_PRH(self, sigmasqr, tau_H, lc, return_chisq=False):
         """
         Calculate the log-likelihood as laid out in Rybicki/Press 95
         """
@@ -247,6 +302,52 @@ class SupOUModel(object):
             return lnl, chisq
 
         return lnl
+
+    def lnlike_kalman(self, sigsqr, tau_H, lc):
+        nou=30
+        ny = len(lc.y)
+        yvar = lc.yerr**2
+
+        omega_L = 1/(10*lc.dt_tot)
+        omega_H = 1/tau_H
+        mu = np.average(lc.y)
+        slope = 1.0
+        
+        omgrid = np.arange(nou) / (nou - 1) * (np.log(omega_H) - np.log(omega_L)) + np.log(omega_L)
+        omgrid = np.exp(omgrid)
+
+        weights = omgrid**(1 - slope/2) / np.sqrt((omgrid**(2 - slope)).sum())
+
+        ysigmasqr = 2 * sigsqr / 2 * (weights**2 / omgrid).sum()
+
+        yhat = np.zeros(ny)
+        yhvar = np.zeros(ny)
+
+        yhat[0] = mu
+        yhvar[0] = ysigmasqr + yvar[0]
+
+        xhat = np.zeros(nou)
+        xcovar = np.diag( sigsqr / (2 * omgrid / weights**2))
+
+        for i in range(1,ny):
+
+            dt = lc.t[i] - lc.t[i-1]
+            alpha = np.exp(-omgrid * dt)
+
+            ouvar = sigsqr / (2 * omgrid) * (1 - alpha**2)
+
+            psi = alpha * np.dot(weights, xcovar)
+
+            xhat = alpha * xhat + psi / yhvar[i-1] * (lc.y[i-1] - mu - (weights * xhat).sum())
+
+            yhat[i] = mu + (weights * xhat).sum()
+
+            xcovar = np.outer(alpha, alpha) * xcovar + np.diag(ouvar) - np.outer(psi, psi) / yhvar[i-1]
+            yhvar[i] = np.dot(weights, np.dot(xcovar, weights.T)) + yvar[i]
+
+        loglik = (-0.5 * np.log(2 * np.pi * yhvar) - 0.5 * (lc.y-yhat)**2/yhvar).sum()
+        return loglik
+
 
     def lnprob(self, p, lc, set_prior=True, sigmasqr_min=1e-10):
         #sigma, tau = unpacksinglepar(p)
