@@ -144,21 +144,9 @@
 </dd></dl>
 
 <dl class="method">
-<dt id="drwfast.model.DRWModel.lnlike_GP">
-<code class="descname">lnlike_GP</code><span class="sig-paren">(</span><em>sigmasqr</em>, <em>tau</em>, <em>lc</em><span class="sig-paren">)</span><a class="headerlink" href="#drwfast.model.DRWModel.lnlike_GP" title="Permalink to this definition">¶</a></dt>
-<dd><p>Calculate the loglikelihood using standard Gaussian Process method.</p>
-</dd></dl>
-
-<dl class="method">
 <dt id="drwfast.model.DRWModel.lnlike_PRH">
 <code class="descname">lnlike_PRH</code><span class="sig-paren">(</span><em>sigmasqr</em>, <em>tau</em>, <em>lc</em>, <em>return_chisq=False</em><span class="sig-paren">)</span><a class="headerlink" href="#drwfast.model.DRWModel.lnlike_PRH" title="Permalink to this definition">¶</a></dt>
 <dd><p>Calculate the log-likelihood as laid out in Rybicki/Press 95</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="drwfast.model.DRWModel.lnlike_kalman">
-<code class="descname">lnlike_kalman</code><span class="sig-paren">(</span><em>sigmasqr</em>, <em>tau</em>, <em>lc</em><span class="sig-paren">)</span><a class="headerlink" href="#drwfast.model.DRWModel.lnlike_kalman" title="Permalink to this definition">¶</a></dt>
-<dd><p>Calculate the loglikelihood using the Kalman fitler method.</p>
 </dd></dl>
 
 <dl class="method">
@@ -193,20 +181,6 @@
 <dd><p>Calculate the log-likelihood as laid out in Rybicki/Press 95</p>
 </dd></dl>
 
-<dl class="method">
-<dt id="drwfast.model.SupOUModel.set_weights">
-<code class="descname">set_weights</code><span class="sig-paren">(</span><em>lc</em>, <em>tau_H</em>, <em>alpha</em>, <em>M=30</em><span class="sig-paren">)</span><a class="headerlink" href="#drwfast.model.SupOUModel.set_weights" title="Permalink to this definition">¶</a></dt>
-<dd><p>Calculate the weights of the individual OU processes.</p>
-</dd></dl>
-
-</dd></dl>
-
-<dl class="attribute">
-<dt id="drwfast.model.lnlike_Kalman_fast">
-<code class="descclassname">drwfast.model.</code><code class="descname">lnlike_Kalman_fast</code><a class="headerlink" href="#drwfast.model.lnlike_Kalman_fast" title="Permalink to this definition">¶</a></dt>
-<dd><p>Calculate the DRW loglikelihood using the Kalman Filter Method.</p>
-<p>Note: numba is used for speed, but can&#8217;t be used for methods so the DRWModel method 
-lnlike_kalman calls this function.</p>
 </dd></dl>
 
 </div>
