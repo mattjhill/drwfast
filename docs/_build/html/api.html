@@ -8,7 +8,7 @@
     
     <title>API/Reference &mdash; drwfast 0.1 documentation</title>
     
-    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/sphinxdoc.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     
     <script type="text/javascript">
@@ -23,12 +23,12 @@
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <link rel="top" title="drwfast 0.1 documentation" href="index.html" />
     <link rel="prev" title="Welcome to drwfast’s documentation!" href="index.html" /> 
   </head>
-  <body>
-    <div class="related">
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
       <ul>
         <li class="right" style="margin-right: 10px">
@@ -40,92 +40,10 @@
         <li class="right" >
           <a href="index.html" title="Welcome to drwfast’s documentation!"
              accesskey="P">previous</a> |</li>
-        <li><a href="index.html">drwfast 0.1 documentation</a> &raquo;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">drwfast 0.1 documentation</a> &raquo;</li> 
       </ul>
-    </div>  
-
-    <div class="document">
-      <div class="documentwrapper">
-        <div class="bodywrapper">
-          <div class="body">
-            
-  <div class="section" id="module-drwfast">
-<span id="api-reference"></span><h1>API/Reference<a class="headerlink" href="#module-drwfast" title="Permalink to this headline">¶</a></h1>
-<div class="section" id="module-drwfast.lightcurve">
-<span id="the-lightcurve-module"></span><h2>The &#8220;lightcurve&#8221; module<a class="headerlink" href="#module-drwfast.lightcurve" title="Permalink to this headline">¶</a></h2>
-<dl class="class">
-<dt id="drwfast.lightcurve.LightCurve">
-<em class="property">class </em><tt class="descclassname">drwfast.lightcurve.</tt><tt class="descname">LightCurve</tt><big>(</big><em>data</em><big>)</big><a class="headerlink" href="#drwfast.lightcurve.LightCurve" title="Permalink to this definition">¶</a></dt>
-<dd><p>A light curve object</p>
-<dl class="method">
-<dt id="drwfast.lightcurve.LightCurve.errorbar">
-<tt class="descname">errorbar</tt><big>(</big><big>)</big><a class="headerlink" href="#drwfast.lightcurve.LightCurve.errorbar" title="Permalink to this definition">¶</a></dt>
-<dd><p>plot the light curve</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="drwfast.lightcurve.LightCurve.structure_function">
-<tt class="descname">structure_function</tt><big>(</big><big>)</big><a class="headerlink" href="#drwfast.lightcurve.LightCurve.structure_function" title="Permalink to this definition">¶</a></dt>
-<dd><p>compute the structure function of the light curve at given time lags</p>
-</dd></dl>
-
-</dd></dl>
-
-</div>
-<div class="section" id="module-drwfast.model">
-<span id="the-model-module"></span><h2>The &#8220;model&#8221; module<a class="headerlink" href="#module-drwfast.model" title="Permalink to this headline">¶</a></h2>
-<dl class="class">
-<dt id="drwfast.model.DRWModel">
-<em class="property">class </em><tt class="descclassname">drwfast.model.</tt><tt class="descname">DRWModel</tt><big>(</big><em>lc</em><big>)</big><a class="headerlink" href="#drwfast.model.DRWModel" title="Permalink to this definition">¶</a></dt>
-<dd><p>The damped random walk model object</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>lc</strong> &#8211; A lightcurve object</td>
-</tr>
-</tbody>
-</table>
-<dl class="method">
-<dt id="drwfast.model.DRWModel.do_map">
-<tt class="descname">do_map</tt><big>(</big><em>pinit</em>, <em>set_prior=False</em><big>)</big><a class="headerlink" href="#drwfast.model.DRWModel.do_map" title="Permalink to this definition">¶</a></dt>
-<dd><p>Get the Maximum A Posterior (MAP) DRW parameters.</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="drwfast.model.DRWModel.get_Linf">
-<tt class="descname">get_Linf</tt><big>(</big><em>set_prior=False</em><big>)</big><a class="headerlink" href="#drwfast.model.DRWModel.get_Linf" title="Permalink to this definition">¶</a></dt>
-<dd><p>Get Likelihood that tau -&gt; infinity.</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="drwfast.model.DRWModel.get_Lnoise">
-<tt class="descname">get_Lnoise</tt><big>(</big><em>set_prior=False</em><big>)</big><a class="headerlink" href="#drwfast.model.DRWModel.get_Lnoise" title="Permalink to this definition">¶</a></dt>
-<dd><p>Get Likelihood that tau -&gt; 0.</p>
-</dd></dl>
-
-</dd></dl>
-
-<dl class="function">
-<dt id="drwfast.model.lnlike">
-<tt class="descclassname">drwfast.model.</tt><tt class="descname">lnlike</tt><big>(</big><em>sigma</em>, <em>tau</em>, <em>lc</em>, <em>return_chisq=False</em><big>)</big><a class="headerlink" href="#drwfast.model.lnlike" title="Permalink to this definition">¶</a></dt>
-<dd><p>Calculate the log-likelihood as laid out in Rybicki/Press 95</p>
-</dd></dl>
-
-<dl class="function">
-<dt id="drwfast.model.unpacksinglepar">
-<tt class="descclassname">drwfast.model.</tt><tt class="descname">unpacksinglepar</tt><big>(</big><em>p</em><big>)</big><a class="headerlink" href="#drwfast.model.unpacksinglepar" title="Permalink to this definition">¶</a></dt>
-<dd><p>Internal Function: Unpack the physical parameters from input 1-d array for single mode.</p>
-</dd></dl>
-
-</div>
-</div>
-
-
-          </div>
-        </div>
-      </div>
-      <div class="sphinxsidebar">
+    </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
         <div class="sphinxsidebarwrapper">
   <h3><a href="index.html">Table Of Contents</a></h3>
   <ul>
@@ -139,12 +57,14 @@
   <h4>Previous topic</h4>
   <p class="topless"><a href="index.html"
                         title="previous chapter">Welcome to drwfast&#8217;s documentation!</a></p>
-  <h3>This Page</h3>
-  <ul class="this-page-menu">
-    <li><a href="_sources/api.txt"
-           rel="nofollow">Show Source</a></li>
-  </ul>
-<div id="searchbox" style="display: none">
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/api.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
   <h3>Quick search</h3>
     <form class="search" action="search.html" method="get">
       <input type="text" name="q" />
@@ -152,16 +72,153 @@
       <input type="hidden" name="check_keywords" value="yes" />
       <input type="hidden" name="area" value="default" />
     </form>
-    <p class="searchtip" style="font-size: 90%">
-    Enter search terms or a module, class or function name.
-    </p>
 </div>
 <script type="text/javascript">$('#searchbox').show(0);</script>
         </div>
       </div>
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="module-drwfast">
+<span id="api-reference"></span><h1>API/Reference<a class="headerlink" href="#module-drwfast" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="module-drwfast.lightcurve">
+<span id="the-lightcurve-module"></span><h2>The &#8220;lightcurve&#8221; module<a class="headerlink" href="#module-drwfast.lightcurve" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="drwfast.lightcurve.LightCurve">
+<em class="property">class </em><code class="descclassname">drwfast.lightcurve.</code><code class="descname">LightCurve</code><span class="sig-paren">(</span><em>data</em><span class="sig-paren">)</span><a class="headerlink" href="#drwfast.lightcurve.LightCurve" title="Permalink to this definition">¶</a></dt>
+<dd><p>A light curve object</p>
+<dl class="method">
+<dt id="drwfast.lightcurve.LightCurve.errorbar">
+<code class="descname">errorbar</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#drwfast.lightcurve.LightCurve.errorbar" title="Permalink to this definition">¶</a></dt>
+<dd><p>plot the light curve</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="drwfast.lightcurve.LightCurve.structure_function">
+<code class="descname">structure_function</code><span class="sig-paren">(</span><em>bins</em><span class="sig-paren">)</span><a class="headerlink" href="#drwfast.lightcurve.LightCurve.structure_function" title="Permalink to this definition">¶</a></dt>
+<dd><p>compute the structure function of the light curve at given time lags</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-drwfast.model">
+<span id="the-model-module"></span><h2>The &#8220;model&#8221; module<a class="headerlink" href="#module-drwfast.model" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="drwfast.model.DRWModel">
+<em class="property">class </em><code class="descclassname">drwfast.model.</code><code class="descname">DRWModel</code><span class="sig-paren">(</span><em>lc</em>, <em>lnlikefn='PRH'</em><span class="sig-paren">)</span><a class="headerlink" href="#drwfast.model.DRWModel" title="Permalink to this definition">¶</a></dt>
+<dd><p>The damped random walk model object</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>lc</strong> &#8211; A lightcurve object</td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="drwfast.model.DRWModel.compute_sigma_level">
+<code class="descname">compute_sigma_level</code><span class="sig-paren">(</span><em>trace1</em>, <em>trace2</em>, <em>nbins=50</em><span class="sig-paren">)</span><a class="headerlink" href="#drwfast.model.DRWModel.compute_sigma_level" title="Permalink to this definition">¶</a></dt>
+<dd><p>From a set of traces, bin by number of standard deviations</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="drwfast.model.DRWModel.do_map">
+<code class="descname">do_map</code><span class="sig-paren">(</span><em>pinit</em>, <em>set_prior=False</em><span class="sig-paren">)</span><a class="headerlink" href="#drwfast.model.DRWModel.do_map" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the Maximum A Posterior (MAP) DRW parameters.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="drwfast.model.DRWModel.get_Linf">
+<code class="descname">get_Linf</code><span class="sig-paren">(</span><em>set_prior=False</em><span class="sig-paren">)</span><a class="headerlink" href="#drwfast.model.DRWModel.get_Linf" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get Likelihood that tau -&gt; infinity.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="drwfast.model.DRWModel.get_Lnoise">
+<code class="descname">get_Lnoise</code><span class="sig-paren">(</span><em>set_prior=False</em><span class="sig-paren">)</span><a class="headerlink" href="#drwfast.model.DRWModel.get_Lnoise" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get Likelihood that tau -&gt; 0.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="drwfast.model.DRWModel.lnlike_GP">
+<code class="descname">lnlike_GP</code><span class="sig-paren">(</span><em>sigmasqr</em>, <em>tau</em>, <em>lc</em><span class="sig-paren">)</span><a class="headerlink" href="#drwfast.model.DRWModel.lnlike_GP" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate the loglikelihood using standard Gaussian Process method.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="drwfast.model.DRWModel.lnlike_PRH">
+<code class="descname">lnlike_PRH</code><span class="sig-paren">(</span><em>sigmasqr</em>, <em>tau</em>, <em>lc</em>, <em>return_chisq=False</em><span class="sig-paren">)</span><a class="headerlink" href="#drwfast.model.DRWModel.lnlike_PRH" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate the log-likelihood as laid out in Rybicki/Press 95</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="drwfast.model.DRWModel.lnlike_kalman">
+<code class="descname">lnlike_kalman</code><span class="sig-paren">(</span><em>sigmasqr</em>, <em>tau</em>, <em>lc</em><span class="sig-paren">)</span><a class="headerlink" href="#drwfast.model.DRWModel.lnlike_kalman" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate the loglikelihood using the Kalman fitler method.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="drwfast.model.DRWModel.plot_MCMC_trace">
+<code class="descname">plot_MCMC_trace</code><span class="sig-paren">(</span><em>ax</em>, <em>trace</em>, <em>scatter=False</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#drwfast.model.DRWModel.plot_MCMC_trace" title="Permalink to this definition">¶</a></dt>
+<dd><p>Plot traces and contours</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="drwfast.model.SupOUModel">
+<em class="property">class </em><code class="descclassname">drwfast.model.</code><code class="descname">SupOUModel</code><span class="sig-paren">(</span><em>lc</em>, <em>lnlikefn='PRH'</em><span class="sig-paren">)</span><a class="headerlink" href="#drwfast.model.SupOUModel" title="Permalink to this definition">¶</a></dt>
+<dd><p>The damped random walk model object</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>lc</strong> &#8211; A lightcurve object</td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="drwfast.model.SupOUModel.do_map">
+<code class="descname">do_map</code><span class="sig-paren">(</span><em>pinit</em>, <em>set_prior=False</em><span class="sig-paren">)</span><a class="headerlink" href="#drwfast.model.SupOUModel.do_map" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the Maximum A Posterior (MAP) DRW parameters.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="drwfast.model.SupOUModel.lnlike_PRH">
+<code class="descname">lnlike_PRH</code><span class="sig-paren">(</span><em>sigmasqr</em>, <em>tau_H</em>, <em>lc</em>, <em>return_chisq=False</em><span class="sig-paren">)</span><a class="headerlink" href="#drwfast.model.SupOUModel.lnlike_PRH" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate the log-likelihood as laid out in Rybicki/Press 95</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="drwfast.model.SupOUModel.set_weights">
+<code class="descname">set_weights</code><span class="sig-paren">(</span><em>lc</em>, <em>tau_H</em>, <em>alpha</em>, <em>M=30</em><span class="sig-paren">)</span><a class="headerlink" href="#drwfast.model.SupOUModel.set_weights" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate the weights of the individual OU processes.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="attribute">
+<dt id="drwfast.model.lnlike_Kalman_fast">
+<code class="descclassname">drwfast.model.</code><code class="descname">lnlike_Kalman_fast</code><a class="headerlink" href="#drwfast.model.lnlike_Kalman_fast" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate the DRW loglikelihood using the Kalman Filter Method.</p>
+<p>Note: numba is used for speed, but can&#8217;t be used for methods so the DRWModel method 
+lnlike_kalman calls this function.</p>
+</dd></dl>
+
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
       <div class="clearer"></div>
     </div>
-    <div class="related">
+    <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
       <ul>
         <li class="right" style="margin-right: 10px">
@@ -173,12 +230,12 @@
         <li class="right" >
           <a href="index.html" title="Welcome to drwfast’s documentation!"
              >previous</a> |</li>
-        <li><a href="index.html">drwfast 0.1 documentation</a> &raquo;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">drwfast 0.1 documentation</a> &raquo;</li> 
       </ul>
     </div>
-    <div class="footer">
+    <div class="footer" role="contentinfo">
         &copy; Copyright 2015, Matthew Hill.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.3.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.4.1.
     </div>
   </body>
 </html>
